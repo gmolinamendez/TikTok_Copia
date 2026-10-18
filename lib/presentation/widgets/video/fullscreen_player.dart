@@ -21,15 +21,22 @@ class FullScreenPlayer extends StatefulWidget {
 class _FullScreenPlayerState extends State<FullScreenPlayer> {
 
   late VideoPlayerController controller;
+  late Future<void> initializeVideo;
 
   @override
   void initState() {
     super.initState();
 
-  controller = VideoPlayerController.asset( widget.videoUrl )
-    ..setVolume(0)
-    ..setLooping(true)
-    ..play();
+    controller = widget.videoUrl.startsWith('http')
+      ? VideoPlayerController.networkUrl( Uri.parse( widget.videoUrl ) )
+      : VideoPlayerController.asset( widget.videoUrl );
+
+    initializeVideo = controller.initialize().then((_) {
+      controller
+        ..setVolume(0)
+        ..setLooping(true)
+        ..play();
+    });
 
   }
 
@@ -44,7 +51,7 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
   Widget build(BuildContext context) {
 
     return FutureBuilder(
-      future: controller.initialize(),
+      future: initializeVideo,
       builder: (context, snapshot) {
         if ( snapshot.connectionState != ConnectionState.done ){
           return const Center( child: CircularProgressIndicator( strokeWidth: 2 ));
@@ -95,7 +102,7 @@ class _VideoCaption extends StatelessWidget {
   final String caption;
 
 
-  const _VideoCaption({super.key, required this.caption });
+  const _VideoCaption({ required this.caption });
 
   @override
   Widget build(BuildContext context) {

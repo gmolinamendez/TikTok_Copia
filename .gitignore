@@ -1,5 +1,8 @@
 # No subiré los videos
 assets/videos/*.mp4
+# Videos
+/videos
+/*videos
 
 
 # Miscellaneous
@@ -46,3 +49,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+# Videos (pesados, se suben a Firebase Hosting)
+/videos/
+/hosting/videos/
+.firebase/

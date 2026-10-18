@@ -11,10 +11,21 @@ class DiscoverScreen extends StatelessWidget {
 
     final discoverProvider = context.watch<DiscoverProvider>();
 
+    if ( discoverProvider.initialLoading ) {
+      return const Scaffold(
+        body: Center( child: CircularProgressIndicator( strokeWidth: 2 ) )
+      );
+    }
+
+    final message = discoverProvider.errorMessage
+      ?? ( discoverProvider.videos.isEmpty ? 'Todavía no hay videos en Firebase' : null );
 
     return Scaffold(
-      body: discoverProvider.initialLoading
-        ? const Center( child: CircularProgressIndicator( strokeWidth: 2 ) )
+      body: message != null
+        ? Center( child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text( message, textAlign: TextAlign.center ),
+          ))
         : VideoScrollableView(videos: discoverProvider.videos )
     );
   }
