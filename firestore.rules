@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /videos/{videoId} {
+      // Cualquiera puede ver los videos
+      allow read: if true;
+
+      // Solo un usuario con sesión puede publicar, a su nombre y empezando en 0 likes
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.likes == 0
+        && request.resource.data.views == 0;
+
+      // Lo único que se puede cambiar de un video es el contador de likes, y solo de 1 en 1,
+      // junto con el like del propio usuario (se crea o se borra en el mismo batch)
+      allow update: if request.auth != null
+        && request.resource.data.diff( resource.data ).affectedKeys().hasOnly(['likes'])
+        && (
+          ( request.resource.data.likes == resource.data.likes + 1
+            && !exists( /databases/$(database)/documents/videos/$(videoId)/likes/$(request.auth.uid) )
+            && existsAfter( /databases/$(database)/documents/videos/$(videoId)/likes/$(request.auth.uid) ) )
+          ||
+          ( request.resource.data.likes == resource.data.likes - 1
+            && exists( /databases/$(database)/documents/videos/$(videoId)/likes/$(request.auth.uid) )
+            && !existsAfter( /databases/$(database)/documents/videos/$(videoId)/likes/$(request.auth.uid) ) )
+        );
+
+      // Likes: cada usuario solo puede poner o quitar el suyo
+      match /likes/{userId} {
+        allow read: if true;
+        allow create, delete: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Todo lo demás queda cerrado
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "tiktok-apps-moviles",
+          "appId": "1:683316669254:android:286583905e10066da6d347",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "tiktok-apps-moviles",
+          "configurations": {
+            "android": "1:683316669254:android:286583905e10066da6d347",
+            "web": "1:683316669254:web:57f0e47f76f34608a6d347"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "hosting",
+    "ignore": [
+      "firebase.json",
+      "**/.*"
+    ],
+    "headers": [
+      {
+        "source": "**/*.mp4",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=604800"
+          }
+        ]
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}
