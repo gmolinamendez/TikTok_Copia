@@ -57,3 +57,4 @@ app.*.map.json
 # Herramientas locales del editor
 .claude/
 .agents/
+/android/build/
